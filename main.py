@@ -6,7 +6,6 @@ import seaborn as sns
 
 def compute_equations(csv_file):
     # Read CSV into a DataFrame
-    csv_file = "data.csv"
     df = pd.read_csv(csv_file)
     
     #-------------------------------------------------
@@ -108,18 +107,5 @@ def compute_equations(csv_file):
     
 # Example usage:
 if __name__ == "__main__":
-    data = compute_equations("data.csv")
-    data.head()
-    
-    sns.set_theme(style="darkgrid")
-
-    # Load an example dataset with long-form data
-    fmri = sns.load_dataset(data["Fexp", "Re"].loc[data["D"] == 9.6])
-
-    # Plot the responses for different events and regions
-    sns.lineplot(x="Reynolds Number", y="Friction factor(exp)",
-                 hue="region", style="event",
-                 data=fmri)
-    
-
-
+    data = compute_equations("pipe123.csv")
+    data.to_csv("output.csv", index=True)
