@@ -66,6 +66,18 @@ def compute_equations(csv_file):
         1.255 / (df["Re"] * np.sqrt(df["Fexp"]))
     )
 
+
+
+    df["E"] = df["X"] * (df["D"] * 1e-3)
+
+    # Compute the average E for D = 9.6
+    e_avg = df.loc[df["D"] == 9.6, "E"].mean()
+
+    # Step 2: Replace E for all other D values with the average E
+    df.loc[df["D"] != 9.6, "E"] = e_avg
+
+    df.loc[df["D"] != 9.6, "X"] = e_avg / (df.loc[df["D"] != 9.6, "D"]*1e-3)
+
     #-------------------------------------------------
     # Equation (6)
     #   Ftheo = (-1.737 ln[ 0.269 X  -  (2.185 / Re) ln(0.269 X  + 14.5 / Re) ])^-2
