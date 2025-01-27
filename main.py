@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import math
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def compute_equations(csv_file):
     # Read CSV into a DataFrame
@@ -108,3 +110,16 @@ def compute_equations(csv_file):
 if __name__ == "__main__":
     data = compute_equations("data.csv")
     data.head()
+    
+    sns.set_theme(style="darkgrid")
+
+    # Load an example dataset with long-form data
+    fmri = sns.load_dataset(data["Fexp", "Re"].loc[data["D"] == 9.6])
+
+    # Plot the responses for different events and regions
+    sns.lineplot(x="Reynolds Number", y="Friction factor(exp)",
+                 hue="region", style="event",
+                 data=fmri)
+    
+
+
