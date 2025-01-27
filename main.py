@@ -32,7 +32,7 @@ def compute_equations(csv_file):
 
     #-------------------------------------------------
     # Equation (2)
-    #   Vavg = (4 × Q) / (π × D² × 10^(-6))
+    #   Vavg = (Q) / ((π/4) × D² × 10^(-6))
     #   Make sure to use π * (D^2) * 10^(-6)
     #-------------------------------------------------
     df["Vavg"] = ( df["Q"]) / ((pi /4.0)* (df["D"]**2) * 1e-6)
@@ -44,13 +44,13 @@ def compute_equations(csv_file):
     #
     # In your notes it looks like f = 1000 kg/m³,
     # and μ (viscosity) = 0.001 Pa·s = 1e-3,
-    # so effectively Re = (ρ × Vavg × D)/μ.
+    # so effectively Re = (ρ × Vavg × D× 10^(-3)/μ.
     #-------------------------------------------------
     df["Re"] = (rho * df["Vavg"] * df["D"]*1e-3) / mu
 
     #-------------------------------------------------
     # Equation (4)
-    #   Fexp = [ P_avg × D × 10^(-3) ] / [ 2 × ρ × (Vavg)² ]
+    #   Fexp = [ P_avg × D × 10^(-3) ] / [ 2 × dl x ρ × (Vavg)² ]
     #   (Here ρ = 1×10^3, from your notes)
     #-------------------------------------------------
     df["Fexp"] = (df["P_avg"] * df["D"] * 1e-3) / (2.0 * dl*rho * (df["Vavg"]**2))
@@ -68,7 +68,7 @@ def compute_equations(csv_file):
 
     #-------------------------------------------------
     # Equation (6)
-    #   Ftheo = -1.737 ln[ 0.269 X  -  (2.185 / Re) ln(0.269 X  + 1.49 / Re) ]
+    #   Ftheo = (-1.737 ln[ 0.269 X  -  (2.185 / Re) ln(0.269 X  + 14.5 / Re) ])^-2
 
     #-------------------------------------------------
     df["Ftheo"] = 1/(-1.737 * np.log(
