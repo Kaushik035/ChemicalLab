@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
 import math
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def compute_equations(csv_file):
-    # Read CSV into a DataFrame
-    csv_file = "data.csv"
-    df = pd.read_csv(csv_file)
+    df = csv_file
     
     #-------------------------------------------------
     # Assumed constants based on your notes:
@@ -22,7 +22,7 @@ def compute_equations(csv_file):
     rho = 1000.0         # fluid density
     mu  = 1e-3           # viscosity
     pi  = math.pi
-    dl = 1e-3             
+    dL = 0.32            
 
     #-------------------------------------------------
     # Equation (1)
@@ -53,7 +53,7 @@ def compute_equations(csv_file):
     #   Fexp = [ P_avg × D × 10^(-3) ] / [ 2 × dl x ρ × (Vavg)² ]
     #   (Here ρ = 1×10^3, from your notes)
     #-------------------------------------------------
-    df["Fexp"] = (df["P_avg"] * df["D"] * 1e-3) / (2.0 * dl*rho * (df["Vavg"]**2))
+    df["Fexp"] = (df["P_avg"] * df["D"] * 1e-3) / (2.0 * dL*rho * (df["Vavg"]**2))
 
     #-------------------------------------------------
     # Equation (5)
@@ -65,9 +65,7 @@ def compute_equations(csv_file):
     df["X"] = (3.7 * (10 ** exponent_part)) - (
         1.255 / (df["Re"] * np.sqrt(df["Fexp"]))
     )
-
-
-
+    
     df["E"] = df["X"] * (df["D"] * 1e-3)
 
     # Compute the average E for D = 9.6
@@ -89,22 +87,30 @@ def compute_equations(csv_file):
         + (14.5 / df["Re"]))
     ))**2
 
-    #-------------------------------------------------
+    #------------------------------------------------
     # Least Counts  
-    dD = 1e-6
-    dQ = 1e-5
-
+    dD = 1e-5
+    dQ = 1e-6
+    dl = 1e-3
     #-------------------------------------------------
     #Error Calcuclation
-    df["dRe/Re"] = np.sqrt( (dQ/df["Q"])**2 + (dD/df["D"])**2 )
-    df["dFe/Fe"] = np.sqrt( ((df["P_max"]-df["P_min"])*9.81/df["P_avg"])**2 + (dD/df["D"])**2 + (2*dQ/df["Q"])**2 + (dl/0.85)**2 )
+    df["dQ/Q"] = dQ/df["Q"]
+    df["dRe/Re"] = np.sqrt( (df["dQ/Q"])**2 + (dD/df["D"])**2 ) *100
+    df["dFe/Fe"] = np.sqrt( ((df["P_max"]-df["P_min"])*9.81/df["P_avg"])**2 + (dD/df["D"])**2 + (2*df["dQ/Q"])**2 + (dl/0.85)**2 ) *100
     
-    # Print out the combined table:
-    # Original columns + the new columns for Q, Vavg, Re, Fexp, X, Ftheo.
+    #-------------------------------------------------
     return df
 
     
 # Example usage:
 if __name__ == "__main__":
-    data = compute_equations("data.csv")
-    data.head()
+    pipe3 = pd.read_csv("pipe123.csv")
+    pipe3 = pipe3.loc[pipe3["D"]==9.6]
+    bend = pd.read_csv("Long,Short - Sheet1.csv")
+    bend = pd.concat([bend, pipe3], ignore_index=True)
+    data = compute_equations(bend)
+    data.to_csv("bends.csv", index=True)
+
+    #data2 = pd.read_csv("pipe123.csv")
+    #data_pipes = compute_equations(data2)
+    #data_pipes.to_csv("output2.csv")
